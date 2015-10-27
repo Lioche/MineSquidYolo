@@ -3,11 +3,14 @@ package be.lioche.compact.events;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.minecraft.server.v1_8_R2.EnumParticle;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import be.lioche.api.enums.Particles;
 import be.lioche.api.enums.Symboles;
 import be.lioche.api.packet.Holo;
 import be.lioche.compact.main.Main;
@@ -74,6 +77,8 @@ public class Kill implements Listener{
 				if(killK.count  > 1){
 					Holo h = new Holo();
 					if(killK.count >= 10){
+						Particles.sendParticle(EnumParticle.VILLAGER_ANGRY, k.getLocation(), 0, 1.2, 0, 1, 10);
+						Particles.sendParticle(EnumParticle.FLAME, k.getLocation(), 0, 2, 0, 1, 10);
 						h.create(p.getLocation().add(0,1,0), "§6§lMEGA COMBOOO §e(§6§l"+killK.count+"§e)");
 						h.showToAll();
 						Holo.followPlayer(p, h, 1L);

@@ -23,80 +23,73 @@ public class Sponsor implements Listener, CommandExecutor{
 
 		if(sender instanceof Player){
 			Player p = (Player)sender;
-			NMSChicken nms = new NMSChicken(p.getWorld(), p);
-//			Location loc; 
-//			Block bl;
-			int min = Main.instance.getConfig().getInt(p.getUniqueId()+".sponsor");
+			if(!p.hasPermission("lioche.compact.sponsor.vip")){
+				final NMSChicken nms = new NMSChicken(p.getWorld(), p);
+				int min = Main.instance.getConfig().getInt("sponsor."+p.getUniqueId());
 
-			if(Main.instance.getConfig().contains(p.getUniqueId().toString())){				
-				if(min == 0){
-//					REMPLACE PAR LA FONCTION SETNOCLIP, TRAVERSE LES MURS.
-//					
-//					for(int b = (int) p.getLocation().getY(); b < p.getLocation().getY()+22; b++){
-//						loc = p.getLocation();
-//						loc.setY(b);
-//
-//						bl = loc.getBlock();
-//						if(bl.getType() != Material.AIR){
-//							p.sendMessage(Main.prefix+"Il ne doit pas y avoir de bloc au dessus de vous.");
-//							return false;
-//						}
-//					}
+				if(Main.instance.getConfig().contains("sponsor."+p.getUniqueId())){			
+					if(min == 0){
+						nms.setup();
+						nms.setNoClip(false, 17); 
+						EntityTypes.spawnEntity(nms, nms.getLocation());
+						Bukkit.getScheduler().runTaskLater(Main.instance, new Runnable() {
+							public void run() {
+								nms.die();
+							}
+						}, 20*60L);
+
+						p.sendMessage(Main.prefix+"Ton sponsor arrive par les airs.");
+						Main.instance.getConfig().set("sponsor."+p.getUniqueId(), 30);
+						Main.instance.saveConfig();
+						launchCooldown(p);
+
+						return true;
+					}else{
+						p.sendMessage(Main.prefix + "Votre sponsor sera disponible dans: "+ min + " min.");
+						return false;
+					}
+				}else{
 					nms.setup();
 					nms.setNoClip(false, 17); 
 					EntityTypes.spawnEntity(nms, nms.getLocation());
-					
+					Bukkit.getScheduler().runTaskLater(Main.instance, new Runnable() {
+						public void run() {
+							nms.die();
+						}
+					}, 20*60L);
+
 					p.sendMessage(Main.prefix+"Ton sponsor arrive par les airs.");
-					Main.instance.getConfig().set(p.getUniqueId()+".sponsor", 30);
+					Main.instance.getConfig().set("sponsor."+p.getUniqueId(), 30);
 					Main.instance.saveConfig();
 					launchCooldown(p);
-					
+
 					return true;
-				}else{
-					p.sendMessage(Main.prefix + "Votre sponsor sera disponible dans: "+ min + " min.");
-					return false;
 				}
 			}else{
-//				REMPLACE PAR LA FONCTION SETNOCLIP, TRAVERSE LES MURS.
-//				
-//				for(int b = (int) p.getLocation().getY(); b < p.getLocation().getY()+22; b++){
-//					loc = p.getLocation();
-//					loc.setY(b);
-//
-//					bl = loc.getBlock();
-//					if(bl.getType() != Material.AIR){
-//						p.sendMessage(Main.prefix+"Il ne doit pas y avoir de bloc au dessus de vous.");
-//						return false;
-//					}
-//				}
-				nms.setup();
-				nms.setNoClip(false, 17); 
-				EntityTypes.spawnEntity(nms, nms.getLocation());
-				
-				p.sendMessage(Main.prefix+"Ton sponsor arrive par les airs.");
-				Main.instance.getConfig().set(p.getUniqueId()+".sponsor", 30);
-				Main.instance.saveConfig();
-				launchCooldown(p);
-				
-				return true;
+				p.sendMessage(Main.prefix+"Erreur: Vous avez accès au /sponsorvip");
 			}
-
 		}
 		return false;
 	}
 
 	public static void launchCooldown(final Player p){
-		if(Main.instance.getConfig().getInt(p.getUniqueId()+".sponsor") != 0){
+		if(Main.instance.getConfig().getInt("sponsor."+p.getUniqueId()) != 0){
+
 			final int c = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.instance, new Runnable() {
-				int min = Main.instance.getConfig().getInt(p.getUniqueId()+".sponsor");
+				int min = Main.instance.getConfig().getInt("sponsor."+p.getUniqueId());
 				public void run() {
 					if(min != 0){
-						min = min--;
-						Main.instance.getConfig().set(p.getUniqueId()+".sponsor", min--);
-						Main.instance.saveConfig();
+						if(min == 1){
+							Main.instance.getConfig().set("sponsor."+p.getUniqueId(), 0);
+							Main.instance.saveConfig();
+						}else{
+							min = min--;
+							Main.instance.getConfig().set("sponsor."+p.getUniqueId(), min--);
+							Main.instance.saveConfig();
+						}
 					}
 				}
-			}, 20*60L, 20*60L);
+			}, 20L*60L, 20L*60L);
 
 			Bukkit.getScheduler().runTaskLater(Main.instance, new Runnable() {
 				public void run() {

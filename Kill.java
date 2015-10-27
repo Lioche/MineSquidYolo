@@ -77,12 +77,10 @@ public class Kill implements Listener{
 
 				if(killK.count  > 1){
 					Holo h = new Holo();
-//					Particles.createShield(p.getLocation().add(0,0.2,0), EnumParticle.REDSTONE, 15F, false);
 					if(killK.count >= 10){
-						Particles.sendParticle(EnumParticle.VILLAGER_ANGRY, k.getLocation(), 0, 1.2, 0, 1, 10);
 						for(double t = 0; t < 3.5 * Math.PI; t += 0.39){
 							Particles.sendParticle(EnumParticle.REDSTONE, k.getLocation(), Math.cos(t)/1.5, t/5, Math.sin(t)/1.5, 2, 5);
-							Particles.sendParticle(EnumParticle.SPELL_MOB_AMBIENT, k.getLocation(), Math.sin(t)/1.5, t/5, Math.cos(t)/1.5, 10, 25);
+							Particles.sendParticle(EnumParticle.SNOW_SHOVEL, k.getLocation(), Math.sin(t)/1.5, t/5, Math.cos(t)/1.5, 10, 25);
 						}
 						
 						h.create(p.getLocation().add(0,1,0), "§6§lMEGA COMBOOO §e(§6§l"+killK.count+"§e)");

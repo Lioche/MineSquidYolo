@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.Inventory;
 
 import be.lioche.api.nms.NMSChicken;
+import be.lioche.api.nms.NMSChickenVIP;
 import be.lioche.compact.main.Main;
 
 public class ChickenInteract implements Listener{
@@ -31,11 +32,21 @@ public class ChickenInteract implements Listener{
 			for(Player pl : Bukkit.getOnlinePlayers()){
 				uuids.add(pl.getUniqueId());
 			}
-			
+
 			if(uuids.contains(chicken.getUniqueId())){
-				NMSChicken nms = new NMSChicken(p.getWorld(), p);
-				nms.setupItems();
-				Inventory inv = nms.getChickInventory();
+				Inventory inv = null;
+				NMSChickenVIP nmsv = null;
+				NMSChicken nms = null;
+
+				if(p.hasPermission("lioche.sponsor.vip")){
+					nmsv = new NMSChickenVIP(p.getWorld(), p);
+					nmsv.setupItems();
+					inv = nmsv.getChickInventory();
+				}else{
+					nms = new NMSChicken(p.getWorld(), p);
+					nms.setupItems();
+					inv = nms.getChickInventory();
+				}
 
 				if(chicken.getUniqueId().equals(p.getUniqueId())){
 					p.openInventory(inv);
@@ -44,15 +55,18 @@ public class ChickenInteract implements Listener{
 						public void run() {
 							chicken.remove();
 						}
-					}, 50L);
+					}, 20L);
 				}else{
 					p.sendMessage(Main.prefix+"Ce sponsor ne vous est pas destiné.");
 				}
-				
-				nms.die();
+
+
+				if(p.hasPermission("lioche.sponsor.vip")){
+					nmsv.die();
+				}else{
+					nms.die();
+				}
 			}
-			
-			
 		}
 	}	
 }

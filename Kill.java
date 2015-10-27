@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import net.minecraft.server.v1_8_R2.EnumParticle;
 
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -76,12 +77,18 @@ public class Kill implements Listener{
 
 				if(killK.count  > 1){
 					Holo h = new Holo();
+//					Particles.createShield(p.getLocation().add(0,0.2,0), EnumParticle.REDSTONE, 15F, false);
 					if(killK.count >= 10){
 						Particles.sendParticle(EnumParticle.VILLAGER_ANGRY, k.getLocation(), 0, 1.2, 0, 1, 10);
-						Particles.sendParticle(EnumParticle.FLAME, k.getLocation(), 0, 2, 0, 1, 10);
+						for(double t = 0; t < 3.5 * Math.PI; t += 0.39){
+							Particles.sendParticle(EnumParticle.REDSTONE, k.getLocation(), Math.cos(t)/1.5, t/5, Math.sin(t)/1.5, 2, 5);
+							Particles.sendParticle(EnumParticle.SPELL_MOB_AMBIENT, k.getLocation(), Math.sin(t)/1.5, t/5, Math.cos(t)/1.5, 10, 25);
+						}
+						
 						h.create(p.getLocation().add(0,1,0), "§6§lMEGA COMBOOO §e(§6§l"+killK.count+"§e)");
 						h.showToAll();
 						Holo.followPlayer(p, h, 1L);
+						k.getWorld().playSound(k.getLocation(), Sound.FIZZ, 1, 3);
 					}else{
 						h.create(p.getLocation().add(0,1,0), "§c§lCombo x"+killK.count);
 						h.showToAll();

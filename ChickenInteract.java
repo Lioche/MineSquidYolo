@@ -38,7 +38,7 @@ public class ChickenInteract implements Listener{
 				NMSChickenVIP nmsv = null;
 				NMSChicken nms = null;
 
-				if(p.hasPermission("lioche.sponsor.vip")){
+				if(p.hasPermission("lioche.compact.sponsor.vip")){
 					nmsv = new NMSChickenVIP(p.getWorld(), p);
 					nmsv.setupItems();
 					inv = nmsv.getChickInventory();
@@ -61,7 +61,7 @@ public class ChickenInteract implements Listener{
 				}
 
 
-				if(p.hasPermission("lioche.sponsor.vip")){
+				if(p.hasPermission("lioche.compact.sponsor.vip")){
 					nmsv.die();
 				}else{
 					nms.die();

@@ -5,11 +5,17 @@ import java.util.UUID;
 
 import net.minecraft.server.v1_8_R2.EnumParticle;
 
+import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
 import be.lioche.api.enums.Particles;
 import be.lioche.api.enums.Symboles;
@@ -51,12 +57,46 @@ public class Kill implements Listener{
 
 	@EventHandler
 	public void onKill(EntityDamageByEntityEvent e){
-		if(e.getEntity() instanceof Player && e.getDamager() instanceof Player){
+		if(e.getEntity() instanceof Player){
 			Player p = (Player)e.getEntity();
-			Player k = (Player)e.getDamager();
-			double dmg = e.getDamage();
-			if(p.getHealth()-dmg <= 0){
-				p.sendMessage(Main.prefix+"Il restait "+ k.getHealth()/2 + " " + Symboles.HEARTH.get()+" a "+k.getName()+".");
+			if(e.getDamager() instanceof Player){	
+				Player k = (Player)e.getDamager();
+				p.setMaximumNoDamageTicks(Main.instance.getConfig().getInt("PvP-Ticks"));
+				double dmg = e.getDamage();
+				if(p.getHealth()-dmg <= 0){
+					p.sendMessage(Main.prefix+"Il restait "+ be.lioche.api.main.Main.df.format(k.getHealth()/2) + " " + Symboles.HEARTH.get()+" a "+k.getName()+".");
+				}
+			}else{
+				p.setMaximumNoDamageTicks(10);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onDamage(EntityDamageEvent e){
+		if(e.getEntity() instanceof Player){
+			Player p = (Player)e.getEntity();
+			if(e.getCause() != DamageCause.ENTITY_ATTACK){
+				p.setMaximumNoDamageTicks(20);
+			}
+		}
+	}
+
+	@EventHandler
+	public void creeper(EntityDeathEvent e){
+		if(e.getEntity() instanceof Creeper){
+			Creeper c = (Creeper)e.getEntity();
+			e.getDrops().clear();
+			ItemStack i = new ItemStack(Material.MONSTER_EGG, 1, (byte)50);
+			double dropTnT = 100 - Main.instance.getConfig().getInt("Drops.tnt");
+			double dropCreep = 100 - Main.instance.getConfig().getInt("Drops.creepers");
+			
+			if(Math.random() * 100 >= dropCreep){
+				c.getWorld().dropItemNaturally(c.getLocation(), i);
+			}
+			
+			if(Math.random() * 100 >= dropTnT){
+				c.getWorld().dropItemNaturally(c.getLocation(), new ItemStack(Material.TNT));
 			}
 		}
 	}
@@ -78,11 +118,14 @@ public class Kill implements Listener{
 				if(killK.count  > 1){
 					Holo h = new Holo();
 					if(killK.count >= 10){
+						if(p.getFireTicks() != 0){
+							p.setFireTicks(killK.count);
+						}
 						for(double t = 0; t < 3.5 * Math.PI; t += 0.39){
 							Particles.sendParticle(EnumParticle.REDSTONE, k.getLocation(), Math.cos(t)/1.5, t/5, Math.sin(t)/1.5, 2, 5);
 							Particles.sendParticle(EnumParticle.SNOW_SHOVEL, k.getLocation(), Math.sin(t)/1.5, t/5, Math.cos(t)/1.5, 10, 25);
 						}
-						
+
 						h.create(p.getLocation().add(0,1,0), "§6§lMEGA COMBOOO §e(§6§l"+killK.count+"§e)");
 						h.showToAll();
 						Holo.followPlayer(p, h, 1L);

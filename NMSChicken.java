@@ -116,33 +116,21 @@ public class NMSChicken extends EntityChicken implements Listener{
 		weapons.add(bow);
 		weapons.add(is);
 
-		Potion h1 = new Potion(PotionType.INSTANT_HEAL, 1);
 		Potion h2 = new Potion(PotionType.INSTANT_HEAL, 2);
-		Potion po1 = new Potion(PotionType.POISON, 1, true);
 		Potion po2 = new Potion(PotionType.POISON, 2, true);
-		Potion f1 = new Potion(PotionType.STRENGTH, 1, true, true);
 		Potion f2 = new Potion(PotionType.STRENGTH, 2, true);
-		Potion w1 = new Potion(PotionType.WEAKNESS, 1, true, true);
 		Potion w2 = new Potion(PotionType.WEAKNESS, 2, true, true);
 		Potion r1 = new Potion(PotionType.REGEN, 2, true);
 
-		ItemStack p1 = h1.toItemStack(pp);
 		ItemStack p2 = h2.toItemStack(pp);
-		ItemStack p4 = po1.toItemStack(pp);
 		ItemStack p5 = po2.toItemStack(pp);
-		ItemStack p7 = f1.toItemStack(pp);
 		ItemStack p8 = f2.toItemStack(pp);
-		ItemStack p3 = w1.toItemStack(pp);
 		ItemStack p6 = w2.toItemStack(pp);
 		ItemStack p9 = r1.toItemStack(pp);
 
-		potions.add(p1);
 		potions.add(p2);
-		potions.add(p3);
-		potions.add(p4);
 		potions.add(p5);
 		potions.add(p6);
-		potions.add(p7);
 		potions.add(p8);
 		potions.add(p9);
 		
@@ -152,11 +140,13 @@ public class NMSChicken extends EntityChicken implements Listener{
 		ItemStack iron = new ItemStack(Material.IRON_ORE, nbr+(nbr*2-pp*4)/4);
 		ItemStack gold = new ItemStack(Material.GOLD_ORE, (nbr+(nbr*2-pp*4))/4);
 		ItemStack coal = new ItemStack(Material.COAL, nbr+(nbr*2+2-pp*4+2)/2);
-		ItemStack obsi = new ItemStack(Material.OBSIDIAN, (pp*3)/2);
+		ItemStack obsi = new ItemStack(Material.OBSIDIAN, (pp*3));
 		ItemStack creep = me.toItemStack(pp*pp+3);
 		ItemStack log = new ItemStack(Material.LOG, nbr*(nbr/2)+((nbr*2)/3)/(pp*2)/4);
 		ItemStack exp = new ItemStack(Material.EXP_BOTTLE, nbr*(pp/2)+((nbr-pp*2)/3));
 		ItemStack arrow = new ItemStack(Material.ARROW, nbr+(nbr/2)+5);
+		ItemStack gapple = new ItemStack(Material.GOLDEN_APPLE, pp-1);
+		ItemStack ender = new ItemStack(Material.ENDER_PEARL, (pp-1)*(pp-1));
 		
 		items.add(bread);
 		items.add(log);
@@ -167,6 +157,8 @@ public class NMSChicken extends EntityChicken implements Listener{
 		items.add(gold);
 		items.add(coal);
 		items.add(obsi);
+		items.add(gapple);
+		items.add(ender);
 		
 		noDouble.add(bread);
 		noDouble.add(log);
@@ -175,6 +167,8 @@ public class NMSChicken extends EntityChicken implements Listener{
 		noDouble.add(iron);
 		noDouble.add(gold);
 		noDouble.add(coal);
+		noDouble.add(gapple);
+		noDouble.add(ender);
 
 		items.addAll(weapons);
 		items.addAll(armors);
@@ -209,7 +203,7 @@ public class NMSChicken extends EntityChicken implements Listener{
 					inInv.add(item.getType());
 					if(isenchant > armors.size()/2 && isenchant < armors.size()){
 						if(item.getType().equals(Material.BOW)){
-							this.chickenInv.addItem(arrow);
+							this.chickenInv.setItem(slot-1, arrow);
 							inInv.add(arrow.getType());
 							if(whatenchant == 1){
 								Others.addEnchant(item, Enchantment.ARROW_FIRE, lvlenchant);

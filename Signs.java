@@ -13,6 +13,8 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import be.lioche.api.enums.Symboles;
+import be.lioche.api.utils.Files;
+import be.lioche.compact.cmd.Packs;
 import be.lioche.compact.main.Main;
 
 public class Signs implements Listener{
@@ -61,13 +63,12 @@ public class Signs implements Listener{
 
 				if(s1.equalsIgnoreCase("§f[§bResource pack§f]")){
 					if(packs.containsKey(s2) && packs.get(s2) != null){
-						if(!Main.instance.getConfig().getString("Packs."+p.getUniqueId()).equalsIgnoreCase(s2)){
+						if(!(Packs.getPack(p) == s2)){
 							p.setResourcePack(packs.get(s2));
 							p.sendMessage(Main.prefix+"Installation du ressource pack:§3 "+s2);
 							p.sendMessage("§b "+Symboles.GUILL_ARROW_RIGHT.get()+" Tapez /packclear pour l'enlever.");
 							p.sendSignChange(s.getLocation(), ss);
-							Main.instance.getConfig().set("Packs."+p.getUniqueId(), s2);
-							Main.instance.saveConfig();
+							Files.writeJSON(Main.folder, "", "packs", p.getUniqueId().toString(), s2);
 
 							for(int i = 0; i < packs.size(); i++){
 								if(s.getLocation().add(0,0,i+1).getBlock().getState() instanceof Sign)p.sendSignChange(s.getLocation().add(0,0,i+1), ((Sign)s.getLocation().add(0,0,i+1).getBlock().getState()).getLines());

@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 
 import be.lioche.api.nms.EntityTypes;
 import be.lioche.api.nms.NMSChicken;
+import be.lioche.api.utils.Files;
 import be.lioche.compact.main.Main;
 
 public class Sponsor implements Listener, CommandExecutor{
@@ -25,9 +26,8 @@ public class Sponsor implements Listener, CommandExecutor{
 			Player p = (Player)sender;
 			if(!p.hasPermission("lioche.compact.sponsor.vip")){
 				final NMSChicken nms = new NMSChicken(p.getWorld(), p);
-				int min = Main.instance.getConfig().getInt("sponsor."+p.getUniqueId());
-
-				if(Main.instance.getConfig().contains("sponsor."+p.getUniqueId())){			
+				int min = getTimeLeft(p);
+		
 					if(min == 0){
 						nms.setup();
 						nms.setNoClip(false, 17); 
@@ -39,8 +39,10 @@ public class Sponsor implements Listener, CommandExecutor{
 						}, 20*60L);
 
 						p.sendMessage(Main.prefix+"Ton sponsor arrive par les airs.");
+						
 						Main.instance.getConfig().set("sponsor."+p.getUniqueId(), 30);
 						Main.instance.saveConfig();
+						
 						launchCooldown(p);
 
 						return true;
@@ -48,23 +50,6 @@ public class Sponsor implements Listener, CommandExecutor{
 						p.sendMessage(Main.prefix + "Votre sponsor sera disponible dans: "+ min + " min.");
 						return false;
 					}
-				}else{
-					nms.setup();
-					nms.setNoClip(false, 17); 
-					EntityTypes.spawnEntity(nms, nms.getLocation());
-					Bukkit.getScheduler().runTaskLater(Main.instance, new Runnable() {
-						public void run() {
-							nms.die();
-						}
-					}, 20*60L);
-
-					p.sendMessage(Main.prefix+"Ton sponsor arrive par les airs.");
-					Main.instance.getConfig().set("sponsor."+p.getUniqueId(), 30);
-					Main.instance.saveConfig();
-					launchCooldown(p);
-
-					return true;
-				}
 			}else{
 				p.sendMessage(Main.prefix+"Erreur: Vous avez accès au /sponsorvip");
 			}
@@ -73,19 +58,17 @@ public class Sponsor implements Listener, CommandExecutor{
 	}
 
 	public static void launchCooldown(final Player p){
-		if(Main.instance.getConfig().getInt("sponsor."+p.getUniqueId()) != 0){
+		if(getTimeLeft(p) != 0){
 
 			final int c = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.instance, new Runnable() {
-				int min = Main.instance.getConfig().getInt("sponsor."+p.getUniqueId());
+				int min = getTimeLeft(p);
 				public void run() {
 					if(min != 0){
-						if(min == 1){
-							Main.instance.getConfig().set("sponsor."+p.getUniqueId(), 0);
-							Main.instance.saveConfig();
+						min = min--;
+						if(min == 1){	
+							setTimeLeft(p, 0);
 						}else{
-							min = min--;
-							Main.instance.getConfig().set("sponsor."+p.getUniqueId(), min--);
-							Main.instance.saveConfig();
+							setTimeLeft(p, min);
 						}
 					}
 				}
@@ -97,5 +80,13 @@ public class Sponsor implements Listener, CommandExecutor{
 				}
 			}, 20*60*30L);
 		}
+	}
+	
+	public static int getTimeLeft(Player p){
+		return Integer.parseInt(Files.readJSON(Main.folder, "", "sponsors", p.getUniqueId().toString()));
+	}
+	
+	public static void setTimeLeft(Player p, int value){
+		Files.writeJSON(Main.folder, "", "sponsors", p.getUniqueId().toString(), String.valueOf(value));
 	}
 }

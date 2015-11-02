@@ -119,17 +119,20 @@ public class Kill implements Listener{
 			Player k = (Player)e.getDamager();
 			MPlayer mk = MPlayer.get(k);
 
-			Faction fp = mp.getFaction(); // Faction mec tapé
-			Faction fk = mk.getFaction(); // Faction tapeur
+			Faction fp = mp.getFaction();
+			Faction fk = mk.getFaction(); 
 
-			Rel rpk = fp.getRelationWish(fk); // Relation fp et fk
+			Rel rpk = fp.getRelationWish(fk); 
 
-			Faction lfp = BoardColl.get().getFactionAt(PS.valueOf(p.getLocation())); // Faction à l'endroit du tapé
-			Faction lfk = BoardColl.get().getFactionAt(PS.valueOf(k.getLocation())); // Faction à l'endroit du tapeur
+			Faction lfp = BoardColl.get().getFactionAt(PS.valueOf(p.getLocation())); 
+			Faction lfk = BoardColl.get().getFactionAt(PS.valueOf(k.getLocation())); 
+			
+			/* Intégration du plugin Faction, pour vérifier si un combo doit être appliqué ou non. 01-11-15 */
 
 			if(!Main.isOnSpawn(p) && !Main.isOnSpawn(k) && e.getDamage() > 0 && !e.isCancelled()){
-				if(fp != fk && rpk != Rel.ALLY){ // Si les deux pas dans la même faction et si pas ally
-					if(lfp == fp && lfk != fp){ // Si le tapeur est pas dans la faction du tapé et tapé est dans sa faction
+				if(fp != fk && rpk != Rel.ALLY){ 
+					if(lfk == fk && lfp != fp || rpk == Rel.ENEMY){
+						
 						Kill killP = getPlayerKill(p, p.getUniqueId(), k);
 						Kill killK = getPlayerKill(k, k.getUniqueId(), p);
 
